@@ -1,5 +1,3 @@
-import music_data as mdat
-from playlist_config import PLAYLIST_CREATOR, TEST_ID
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt

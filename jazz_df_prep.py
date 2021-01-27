@@ -1,4 +1,4 @@
-import music_data as mdat
+import feature_collection as mdat
 from playlist_config import PLAYLIST_CREATOR, JAZZ_ID, NOT_JAZZ_ID
 import pandas as pd
 
