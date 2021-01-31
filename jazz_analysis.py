@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas_profiling as pp
 
 
 df = pd.read_csv('jazz.csv', sep='|')
@@ -31,27 +32,27 @@ num_cols = [
             'loudness',
             'tempo',
             'bars_num',
-            # 'bars_duration_mean',
+            'bars_duration_mean',
             'bars_duration_var',
-            # 'beats_num',
-            # 'beats_duration_mean',
-            # 'beats_duration_var',
-            # 'sections_num',
+            'beats_num',
+            'beats_duration_mean',
+            'beats_duration_var',
+            'sections_num',
             'sections_duration_mean',
-            # 'sections_duration_var',
+            'sections_duration_var',
             'loudness_var',
             'tempo_var',
             'key_var',
             'mode_var',
-            # 'segments_num',
+            'segments_num',
             'segments_duration_mean',
-            # 'segments_duration_var',
+            'segments_duration_var',
             'pitches_mean',
             'pitches_var',
             'timbre_mean',
             'timbre_var',
-            # 'tatums_num',
-            # 'tatums_duration_mean',
+            'tatums_num',
+            'tatums_duration_mean',
             'tatums_duration_var',
             'time_signature',
             'key',
@@ -64,12 +65,9 @@ null_data = df[df[num_cols].isnull().any(axis=1)]
 
 #%%    
 
-plt.matshow(df[num_cols].corr())
-
-#%%
-    
-for feat in num_cols:
-    get_violin_plot(feat)
+# Save pandas profiler report
+report = pp.ProfileReport(df)
+report.to_file('profile_report.html')
     
 
 
