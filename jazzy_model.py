@@ -4,8 +4,8 @@ import numpy as np
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import MinMaxScaler, OrdinalEncoder
-from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
+from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV, cross_val_score, StratifiedKFold, learning_curve
 from sklearn.metrics import average_precision_score, make_scorer
 
@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 
 #%%
 # Functions
+
+# def plot_train_test:
 
 # Learning curve plot from sklearn documentation page
 def plot_learning_curve(
@@ -138,6 +140,7 @@ def plot_learning_curve(
 
     return plt
 
+
 #%% 
 # Prepare dataset
 
@@ -206,9 +209,7 @@ num_raw = [
            'instrumentalness',
            'liveness',
            'valence',
-           'beats_duration_mean',
            'beats_duration_var',
-           'bars_duration_var',
            'mode_var',
            'segments_duration_mean',
            'pitches_mean',
@@ -233,20 +234,22 @@ num_scale = [
              'tatums_num',
              'bars_num',
              'bars_duration_mean',
-             'beats_num'          
+             'beats_num',
+             'bars_duration_var',
+             'beats_duration_mean'
             ]
 
 # Set up pipeline
 minmax_scaler = Pipeline(
                          steps = [
                                   ('imputer', SimpleImputer(strategy='median')),
-                                  ('scaler', MinMaxScaler())
+                                  ('scaler', MinMaxScaler(feature_range=(-1,1)))
                                  ]
                         )
 encoder = Pipeline(
                    steps = [
                             ('imputer', SimpleImputer(strategy='most_frequent')),
-                            ('encoder', OrdinalEncoder())
+                            ('encoder', OneHotEncoder())
                            ]
                   )
 
@@ -254,8 +257,8 @@ raw_imputer = Pipeline(steps = [('imputer', SimpleImputer(strategy='median'))])
 
 preprocessor = ColumnTransformer(
                                  transformers = [
-                                                 ('enc', encoder, cat_cols),
-                                                 ('std', minmax_scaler, num_scale),
+                                                 # ('enc', encoder, cat_cols),
+                                                 ('std', minmax_scaler, num_scale+cat_cols),
                                                  ('imp', raw_imputer, num_raw)
                                                 ],
                                  remainder = 'drop'
@@ -264,14 +267,11 @@ preprocessor = ColumnTransformer(
 pipe = Pipeline(
                 steps=[
                        ('preprocessor', preprocessor),
-                       ('classifier', LogisticRegression(
-                                                         penalty = 'elasticnet',
-                                                         class_weight = 'balanced',
-                                                         random_state = 42,
-                                                         solver = 'saga',
-                                                         max_iter = 4000,
-                                                         l1_ratio = 0.8
-                                                        ))
+                       ('classifier', SVC(
+                                          class_weight = 'balanced',
+                                          kernel = 'poly',
+                                          max_iter = 10000
+                                         ))
                       ]
                )
 #%%
@@ -281,8 +281,11 @@ inner_k = 3
 outer_k = 5
 nested_scores = []
 param_grid = {
-              'classifier__C': [0.001, 0.01, 0.1, 1, 10, 100]
+              'classifier__C': [0.001, 0.1, 1, 10, 100, 100], 
+              'classifier__gamma': [0.001, 0.1, 1, 10, 100],
+              'classifier__degree': [1, 2, 3, 4, 5]
              }
+             
 for i in range(NUM_TRIALS):
     
     inner_cv = StratifiedKFold(n_splits=inner_k, shuffle=True, random_state=i)
@@ -311,24 +314,22 @@ model = clf.fit(X, y)
 #%%
 # Visualize model results
 
-# Plot loss values
-
 # Plot training and test scores
 
 # Plot roc and precision recall
 
 # Learning curve
-# fig, axes = plt.subplots(3, 1, figsize=(10, 15))
-# title = 'Learning curve (Logistic regression)'
-# learning_curve_fig = plot_learning_curve(
-#                                          model,
-#                                          title,
-#                                          X,
-#                                          y,
-#                                          cv = inner_cv,
-#                                          n_jobs = 4
-#                                         )
-
+fig, axes = plt.subplots(3, 1, figsize=(10, 15))
+title = 'Learning curve (Support Vector Machine with poly kernel)'
+learning_curve_fig = plot_learning_curve(
+                                          model,
+                                          title,
+                                          X,
+                                          y,
+                                          cv = inner_cv,
+                                          n_jobs = 4
+                                        )
+learning_curve_fig.savefig('learning_curve.png')
 #%% Get some model metrics
 
 # Recall
@@ -336,9 +337,3 @@ model = clf.fit(X, y)
 # Area under PR
 # Area under ROC
 
-
-#%%
-# train_sizes, train_scores, test_scores, fit_times, _ = \
-#         learning_curve(estimator, X, y, cv=cv, n_jobs=n_jobs,
-#                        train_sizes=train_sizes,
-#                        return_times=True)
