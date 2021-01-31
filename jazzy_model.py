@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler, OrdinalEncoder
+from sklearn.preprocessing import MinMaxScaler, OrdinalEncoder
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV, cross_val_score, StratifiedKFold, learning_curve
 from sklearn.metrics import average_precision_score, make_scorer
@@ -154,22 +154,31 @@ num_cols = [
             'instrumentalness',
             'liveness',
             'valence',
-            'num_samples',
-            'loudness',
-            'tempo',
-            'bars_num',
+            'beats_duration_mean',
+            'beats_duration_var',
             'bars_duration_var',
-            'sections_duration_mean',
-            'loudness_var',
-            'tempo_var',
-            'key_var',
             'mode_var',
             'segments_duration_mean',
             'pitches_mean',
             'pitches_var',
+            'tatums_duration_mean',
+            'tatums_duration_var',
+            'num_samples',
+            'loudness',
+            'tempo',
+            'sections_num',
+            'sections_duration_mean',
+            'sections_duration_var',
+            'loudness_var',
+            'tempo_var',
+            'key_var',
+            'segments_num',
             'timbre_mean',
             'timbre_var',
-            'tatums_duration_var'
+            'tatums_num',
+            'bars_num',
+            'bars_duration_mean',
+            'beats_num'  
            ]
 
 cat_cols = [
@@ -189,39 +198,51 @@ y = df['label'].copy()
 
 NUM_TRIALS = 10
 
-num_ftr = [
+num_raw = [
            'danceability',
            'energy',
-           'valence',
-           'num_samples',
-           'pitches_mean',
-           'pitches_var',
-           'segments_duration_mean',
-           'key_var',
            'speechiness',
            'acousticness',
            'instrumentalness',
            'liveness',
-           'loudness',
+           'valence',
+           'beats_duration_mean',
+           'beats_duration_var',
            'bars_duration_var',
-           'loudness_var',
-           'tatums_duration_var',
-           'tempo_var',
            'mode_var',
-           'tempo',
-           'bars_num',
-           'sections_duration_mean',
-           'timbre_mean',
-           'timbre_var'
+           'segments_duration_mean',
+           'pitches_mean',
+           'pitches_var',
+           'tatums_duration_mean',
+           'tatums_duration_var'
           ]
 
+num_scale = [
+             'num_samples',
+             'loudness',
+             'tempo',
+             'sections_num',
+             'sections_duration_mean',
+             'sections_duration_var',
+             'loudness_var',
+             'tempo_var',
+             'key_var',
+             'segments_num',
+             'timbre_mean',
+             'timbre_var',
+             'tatums_num',
+             'bars_num',
+             'bars_duration_mean',
+             'beats_num'          
+            ]
+
 # Set up pipeline
-standard_scaler = Pipeline(
-                           steps = [
-                                    ('imputer', SimpleImputer(strategy='median')),
-                                    ('scaler', StandardScaler())
-                                   ]
-                          )
+minmax_scaler = Pipeline(
+                         steps = [
+                                  ('imputer', SimpleImputer(strategy='median')),
+                                  ('scaler', MinMaxScaler())
+                                 ]
+                        )
 encoder = Pipeline(
                    steps = [
                             ('imputer', SimpleImputer(strategy='most_frequent')),
@@ -234,9 +255,10 @@ raw_imputer = Pipeline(steps = [('imputer', SimpleImputer(strategy='median'))])
 preprocessor = ColumnTransformer(
                                  transformers = [
                                                  ('enc', encoder, cat_cols),
-                                                 ('std', standard_scaler, num_ftr)
+                                                 ('std', minmax_scaler, num_scale),
+                                                 ('imp', raw_imputer, num_raw)
                                                 ],
-                                 remainder='passthrough'
+                                 remainder = 'drop'
                                 )
 
 pipe = Pipeline(
@@ -247,7 +269,7 @@ pipe = Pipeline(
                                                          class_weight = 'balanced',
                                                          random_state = 42,
                                                          solver = 'saga',
-                                                         max_iter = 500,
+                                                         max_iter = 4000,
                                                          l1_ratio = 0.8
                                                         ))
                       ]
