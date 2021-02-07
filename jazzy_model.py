@@ -199,8 +199,6 @@ y = df['label'].copy()
 #%%
 # Prepare training pipeline
 
-NUM_TRIALS = 10
-
 num_raw = [
            'danceability',
            'energy',
@@ -277,8 +275,9 @@ pipe = Pipeline(
 #%%
 
 # Small dataset size so set up nested cross-validation
-inner_k = 3
-outer_k = 5
+NUM_TRIALS = 1
+inner_k = 2
+outer_k = 2
 nested_scores = []
 param_grid = {
               'classifier__C': [0.001, 0.1, 1, 10, 100, 100], 
@@ -298,21 +297,36 @@ for i in range(NUM_TRIALS):
                        scoring = make_scorer(average_precision_score),
                        n_jobs = 4
                       )
+    # Nested cross-validation procedure inspired by 
+    # https://machinelearningmastery.com/nested-cross-validation-for-machine-learning-with-python/
+    for train_index, test_index in outer_cv.split(X, y):
+        
+        X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+        y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+        
+        cv_model = clf.fit(X_train, y_train)
+        best_model = cv_model.best_estimator_
+        
+        predictions = best_model.predict(X_test)
+        aps = average_precision_score(y_test, predictions)
+        nested_scores.append(aps)
     
-    nested_score = cross_val_score(
-                                   clf, 
-                                   X = X,
-                                   y = y,
-                                   cv = outer_cv,
-                                   verbose = 2,
-                                   n_jobs = 4
-                                  )
-    nested_scores += list(nested_score)
+    # nested_score = cross_val_score(
+    #                                clf, 
+    #                                X = X,
+    #                                y = y,
+    #                                cv = outer_cv,
+    #                                verbose = 2,
+    #                                n_jobs = 4
+    #                               )
+    # nested_scores += list(nested_score)
     
 
 model = clf.fit(X, y)
 #%%
 # Visualize model results
+
+# Plot loss
 
 # Plot training and test scores
 
