@@ -1,23 +1,10 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas_profiling as pp
 
 
 df = pd.read_csv('jazz.csv', sep='|')
 
-#%% Define functions
-def get_violin_plot(feature):
-    
-    sns.catplot(
-                x = feature,
-                y = 'label',
-                data = df,
-                orient = 'h',
-                kind = 'violin'
-                )
-    
 #%%
 
 num_cols = [
@@ -63,9 +50,8 @@ description = df[num_cols].describe()
 num_zeros = (df[num_cols] == 0).sum()
 null_data = df[df[num_cols].isnull().any(axis=1)]
 
-#%%    
+#%% Save pandas profiler report
 
-# Save pandas profiler report
 report = pp.ProfileReport(df)
 report.to_file('profile_report.html')
     
