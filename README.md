@@ -1,4 +1,4 @@
-# Playlist-generator
+# Playlist-curator
 This repository explores the possibilities of the features available through the Spotify API (via spotipy in this repo). The goal is to make useful playlist generators to enhance my Spotify experience.
 
 ## General files
