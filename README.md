@@ -7,6 +7,13 @@ feature_collection.py is the main file containing functions used to connect to t
 
 ## Jazzy playlist generator
 
-This project aims to identify "jazzy" songs. "Jazzy" songs do not only refer to songs of the jazz genre, but also songs and genres influenced by jazz, such as funk and certain elements of hip hop. 
+This project aims to identify "jazzy" songs. "Jazzy" songs do not only refer to songs of the jazz genre, but songs that have a "jazzy" feel to, such as funk and hip hop with jazzy or funky beats. 
 
-The training dataset consists of 1487 "jazzy" songs, and 2121 "non-jazzy" songs. The dataset was built by building two playlists in Spotify. The "jazzy" dataset was built by selecting a range of albums with the "jazzy" feel I seek and adding them to the playlist. The same approach was used for the "non-jazzy" playlist, except the albums were songs with a feel I do not want for this particular playlist, from various genres and artists. I generally chose albums I like for both playlists. 
+#### Training
+
+The training dataset consists of 1487 "jazzy" songs, and 2121 "non-jazzy" songs. The dataset was built by building two playlists in Spotify. The "jazzy" dataset was built by selecting a range of albums with the "jazzy" feel I seek and adding them to the playlist. The same approach was used for the "non-jazzy" playlist, except the albums were songs with a feel I do not want for this particular playlist, from various genres and artists. I generally chose albums I like for both playlists. The model is trained in a Jupyter notebook named "Jazzy_training_notebook".
+
+#### Scoring
+
+After the model is trained, it is saved and loaded in another file named "jazzy_weekly". This model loads data from Spotify playlists and prepares it for scoring. Then finally a dataset with songs with a score >=0.5 are returned. These songs can then be used to curate your weekly playlist in Spotify.
+
