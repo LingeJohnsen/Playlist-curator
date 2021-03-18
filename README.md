@@ -5,6 +5,14 @@ This repository explores the possibilities of the features available through the
 
 feature_collection.py is the main file containing functions used to connect to the Spotify API and collect features for specified songs/playlists. The main function, called for example in jazz_df_prep.py, is get_playlist_df() which takes as parameters username and playlist id to read in songs from a given playlist. 
 
+jazz_df_prep.py collects and prepares a dataset for training using functions in feature_collection.py.
+
+Jazzy_notebook.ipynb contains a range of analyses and visualizations of the data collected in jazz_df_prep.py.
+
+Jazzy_training_notebook.ipynb trains a neural network model based on data from jazz_df_prep.py.
+
+jazzy_weekly.py reads data features from weekly generated playlists (Discover Weekly and New Songs Friday Canada) using feature_collection.py, and uses the model from Jazzy_training_notebook.ipynb to score the data and identify songs with a "jazzy" feel that I can then curate these weekly playlists by.
+
 ## Jazzy playlist generator
 
 This project aims to identify "jazzy" songs. "Jazzy" songs do not only refer to songs of the jazz genre, but songs that have a "jazzy" feel to, such as funk and hip hop with jazzy or funky beats. 
