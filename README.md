@@ -11,7 +11,7 @@ Jazzy_notebook.ipynb contains a range of analyses and visualizations of the data
 
 Jazzy_training_notebook.ipynb trains a neural network model based on data from jazz_df_prep.py.
 
-jazzy_weekly.py reads data features from weekly generated playlists (Discover Weekly and New Songs Friday Canada) using feature_collection.py, and uses the model from Jazzy_training_notebook.ipynb to score the data and identify songs with a "jazzy" feel that I can then curate these weekly playlists by.
+jazzy_weekly.py reads data features from weekly generated playlists (Discover Weekly and New Songs Friday Canada/Norway/Sweden/UK/Naija) using feature_collection.py, and uses the model from Jazzy_training_notebook.ipynb to score the data and identify songs with a "jazzy" feel that I can then curate these weekly playlists by.
 
 ## Jazzy playlist generator
 
