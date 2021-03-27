@@ -25,3 +25,7 @@ The training dataset consists of 1487 "jazzy" songs, and 2121 "non-jazzy" songs.
 
 After the model is trained, it is saved and loaded in another file named "jazzy_weekly". This model loads data from Spotify playlists and prepares it for scoring. Then finally a dataset with songs with a score >=0.5 are returned. These songs can then be used to curate your weekly playlist in Spotify.
 
+## Notes about config.py and playlist_config.py
+
+IDs, username, and Spotify token, string parameters necessary to load data via the Spotify API, are stored as parameter strings in two python files named config.py and playlist_config.py. These files are not stored in this repository, but they are called in the files feature_collection.py, jazzy_df_prep.py, and jazzy_weekly.py. 
+
