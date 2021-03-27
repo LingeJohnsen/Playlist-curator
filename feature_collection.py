@@ -24,7 +24,15 @@ def get_playlist_df(creator_name, playlist_id):
     '''
     
     meta_dict = _get_features(creator_name, playlist_id)
+    # Remove NoneType items in features 
+    features_dict = []
+    for f_dict in meta_dict['features']:
+        if f_dict:
+            features = {k: v for k, v in f_dict.items()}
+            features_dict.append(features)
+       
     
+    # Features collected twice and that should be removed from one dataset
     drop_cols = [
              'key',
              'loudness', 
@@ -38,12 +46,16 @@ def get_playlist_df(creator_name, playlist_id):
     base_dict = {key: meta_dict.get(key) for key in base_keys}
     base_df = pd.DataFrame.from_dict(base_dict).set_index('track_id')
 
-    features_df = pd.DataFrame.from_dict(meta_dict['features'])\
+    features_df = pd.DataFrame.from_dict(features_dict)\
                     .rename(columns={'id': 'track_id'})\
                     .drop(drop_cols, axis=1)\
                     .set_index('track_id')
-                
-    analysis_tracks = meta_dict['analysis_features']
+                    
+    analysis_tracks = []
+    for a_dict in meta_dict['analysis_features']:
+        if a_dict:
+            a_features = {k: v for k, v in a_dict.items()}
+            analysis_tracks.append(a_features)
     analysis_df = _get_analysis_df(analysis_tracks).set_index('track_id')
 
     df = base_df.join(features_df).join(analysis_df)
