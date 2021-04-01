@@ -1,15 +1,33 @@
 import feature_collection as mdat
-from playlist_config import PLAYLIST_CREATOR, WEEK_11_2021, NEW_FRIDAY_11_2021
-import pandas as pd
-import keras
+from playlist_config import PLAYLIST_CREATOR
+import playlist_config as pc
+import tensorflow.keras as tfk
 from joblib import load
+import pandas as pd
 
 # Load model
-jazzy_model = keras.models.load_model('jazz_model')
+jazzy_model = tfk.models.load_model('jazz_model')
 
 # Load weekly playlists
-weekly_df = mdat.get_playlist_df(PLAYLIST_CREATOR, WEEK_11_2021)
-new_df = mdat.get_playlist_df(PLAYLIST_CREATOR, NEW_FRIDAY_11_2021)
+weekly_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.DISCOVER_WEEKLY)
+new_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.NEW_MUSIC_FRIDAY)
+release_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.RELEASE_RADAR)
+new_canada_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.NEW_MUSIC_FRIDAY_CANADA)
+new_naija_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.NEW_MUSIC_FRIDAY_NAIJA)
+new_norway_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.NEW_MUSIC_FRIDAY_NORWAY)
+new_sweden_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.NEW_MUSIC_FRIDAY_SWEDEN) 
+new_uk_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.NEW_MUSIC_FRIDAY_UK) 
+
+df_list = [
+            weekly_df, 
+            new_df, 
+            release_df, 
+            new_canada_df,
+            new_naija_df, 
+            new_norway_df,
+            new_sweden_df,
+            new_uk_df
+          ]
 
 features = [
             'danceability',
@@ -42,16 +60,20 @@ features = [
             'timbre_mean',
             'timbre_var',
             'tatums_duration_var'
-           ]
-X = pd.concat([weekly_df.copy(), new_df.copy()], axis=0)
-X = X[features]
+            ]
+concats = pd.concat(df_list, axis=0)
+concats.drop_duplicates(inplace=True)
+songs = concats.copy()
+X = concats[features].copy()
+del concats
 
 # Find the jazzy songs - first have to scale model as in trained dataset
 scaler = load('scaler.joblib')
 X_scaled = scaler.transform(X)
+del X
 
 # Find songs to try out
-songs = pd.concat([weekly_df, new_df], axis=0)
-songs['Scores'] = jazzy_model.predict(X_scaled)
-songs['Predictions'] = songs['Scores'].round(0)
-songs = songs[songs['Predictions']==1]
+songs['scores'] = jazzy_model.predict(X_scaled)
+songs['predictions'] = songs['scores'].round(0)
+songs = songs[songs['predictions']==1]
+songs = songs[['song_name', 'artist', 'album', 'scores', 'predictions']]
