@@ -1,5 +1,5 @@
 # Playlist-curator
-This repository explores the possibilities of the features available through the Spotify API (via spotipy in this repo). The goal is to make useful playlist curators to enhance my Spotify experience.
+This playlist curator model uses the Spotify API together with a neural network model to identify songs with a "jazzy" sound from various generic Spotify playlists, to create a single curated playlist with a more consistent sound geared toward my personal taste.
 
 ## General files
 
