@@ -1,5 +1,5 @@
 # Playlist-curator
-This playlist curator model uses the Spotify API together with a neural network model to identify songs with a "jazzy" sound from various generic Spotify playlists, to create a single curated playlist with a more consistent sound geared toward my personal taste.
+This playlist curator uses the Spotify API together with a neural network model to identify songs with a "jazzy" sound from various generic Spotify playlists, to create a single curated playlist with a more consistent sound geared toward my personal taste.
 
 ## General files
 
