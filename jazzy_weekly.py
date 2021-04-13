@@ -1,9 +1,12 @@
 import feature_collection as mdat
 from playlist_config import PLAYLIST_CREATOR
 import playlist_config as pc
+from config import SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET
 import tensorflow.keras as tfk
 from joblib import load
 import pandas as pd
+import spotipy
+import spotipy.util as util
 
 # Load model
 jazzy_model = tfk.models.load_model('jazz_model')
@@ -77,3 +80,15 @@ songs['scores'] = jazzy_model.predict(X_scaled)
 songs['predictions'] = songs['scores'].round(0)
 songs = songs[songs['predictions']==1]
 songs = songs[['song_name', 'artist', 'album', 'scores', 'predictions']]
+song_ids = songs.index.tolist()
+
+# Add songs to playlist
+token = util.prompt_for_user_token(
+                                   PLAYLIST_CREATOR,
+                                   scope = 'playlist-modify-public',
+                                   client_id = SPOTIPY_CLIENT_ID, 
+                                   client_secret = SPOTIPY_CLIENT_SECRET,
+                                   redirect_uri = 'http://localhost:8888/callback'
+                                  )
+sp = spotipy.Spotify(token)
+sp.user_playlist_add_tracks(PLAYLIST_CREATOR, pc.JAZZY_WEEKLY, song_ids)
