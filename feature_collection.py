@@ -4,12 +4,14 @@ from config import SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET
 import numpy as np
 import pandas as pd
 
-token = SpotifyClientCredentials(
-                                 client_id=SPOTIPY_CLIENT_ID, 
-                                 client_secret=SPOTIPY_CLIENT_SECRET
-                                )
-cache_token = token.get_access_token()
-sp = spotipy.Spotify(cache_token)
+def authenticate():
+    token = SpotifyClientCredentials(
+                                     client_id=SPOTIPY_CLIENT_ID, 
+                                     client_secret=SPOTIPY_CLIENT_SECRET
+                                    )
+    cache_token = token.get_access_token()
+    sp = spotipy.Spotify(cache_token)
+    return sp
 
 def get_playlist_df(creator_name, playlist_id):
     '''Combines metadata and track features into one df.
@@ -74,6 +76,8 @@ def _get_features(creator_name, playlist_id):
     meta_dict(dictionary): dictionary with metadata
     '''
     
+    sp = authenticate()
+    
     songs_missing = True
     offset = 0
     
@@ -85,12 +89,22 @@ def _get_features(creator_name, playlist_id):
     analysis_list = []
     
     while songs_missing is True:
-        playlist_dict = sp.user_playlist_tracks(
-                                                creator_name, 
-                                                playlist_id,
-                                                limit=100,
-                                                offset=offset
-                                               )
+        # Re-authenticate if lose authentication during run
+        try:
+            playlist_dict = sp.user_playlist_tracks(
+                                                    creator_name, 
+                                                    playlist_id,
+                                                    limit=100,
+                                                    offset=offset
+                                                   )
+        except spotipy.client.SpotifyException:
+            sp = authenticate()
+            playlist_dict = sp.user_playlist_tracks(
+                                                    creator_name, 
+                                                    playlist_id,
+                                                    limit=100,
+                                                    offset=offset
+                                                   )
         
         for item in playlist_dict['items']:
             print('Loading new item number {}...'.format(len(track_id_list)+1))
