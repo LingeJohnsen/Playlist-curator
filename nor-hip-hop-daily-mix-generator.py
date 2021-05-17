@@ -9,7 +9,7 @@ import spotipy.util as util
 df = pd.read_csv('nor-hip-hop.csv', sep='|')
 
 # Random sample of 60 songs
-daily_mix_songs = df['track_id'].sample(n=60).tolist()
+daily_mix_songs = df['track_id'].sample(n=30).tolist()
 
 # Save songs to playlist - replace songs already in playlist
 token = util.prompt_for_user_token(
