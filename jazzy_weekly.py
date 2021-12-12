@@ -20,6 +20,7 @@ new_naija_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.NEW_MUSIC_FRIDAY_NAIJA)
 new_norway_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.NEW_MUSIC_FRIDAY_NORWAY)
 new_sweden_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.NEW_MUSIC_FRIDAY_SWEDEN) 
 new_uk_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.NEW_MUSIC_FRIDAY_UK) 
+new_france_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.NEW_MUSIC_FRIDAY_FRANCE)
 
 df_list = [
             weekly_df, 
@@ -29,7 +30,8 @@ df_list = [
             new_naija_df, 
             new_norway_df,
             new_sweden_df,
-            new_uk_df
+            new_uk_df,
+            new_france_df
           ]
 
 features = [
@@ -91,4 +93,4 @@ token = util.prompt_for_user_token(
                                    redirect_uri = 'http://localhost:8888/callback'
                                   )
 sp = spotipy.Spotify(token)
-sp.user_playlist_add_tracks(PLAYLIST_CREATOR, pc.JAZZY_WEEKLY, song_ids)
+sp.user_playlist_replace_tracks(PLAYLIST_CREATOR, pc.JAZZY_WEEKLY, song_ids)
