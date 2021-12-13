@@ -29,7 +29,9 @@ all positive (1) predictions from the model. These songs are then used to refres
 
 ### Metrics on test set
 
-AUC: 
+AUC: 0.79
+Precision: 0.74
+Recall: 0.67
 
 # General files
 
