@@ -21,7 +21,6 @@ new_norway_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.NEW_MUSIC_FRIDAY_NORWA
 new_sweden_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.NEW_MUSIC_FRIDAY_SWEDEN) 
 new_uk_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.NEW_MUSIC_FRIDAY_UK) 
 new_france_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.NEW_MUSIC_FRIDAY_FRANCE)
-spilled_ink_df = mdat.get_playlist_df(PLAYLIST_CREATOR, pc.SPILLED_INK)
 
 df_list = [
             weekly_df, 
@@ -32,8 +31,7 @@ df_list = [
             new_norway_df,
             new_sweden_df,
             new_uk_df,
-            new_france_df,
-            spilled_ink_df
+            new_france_df
           ]
 
 features = [
